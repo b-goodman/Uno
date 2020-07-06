@@ -1,3 +1,5 @@
+import defaultSchema from "../cards.json"
+
 export enum CardAction {
     DrawTwo = 'DrawTwo',
     DrawFour = 'DrawFour',
@@ -13,9 +15,8 @@ export enum CardColor {
     Blue = 'Blue',
 }
 
-export interface ActionCard {
-    action: CardAction,
-    color?: CardColor,
+export interface WildCard {
+    action: CardAction
 }
 
 export interface ColorCard {
@@ -24,60 +25,14 @@ export interface ColorCard {
     action?: CardAction
 }
 
+export class SchemaError extends Error {}
+
 export default class Deck {
 
-    public cards: Array<ColorCard | ActionCard> = []
+    public cards: Array<ColorCard | WildCard> = []
 
-    constructor() {
-        const generateNumberedCards = (color: CardColor): Array<ColorCard> => {
-            return [
-                0,
-                ...Array(10).keys(),
-                ...Array(10).keys()
-            ].map(number => {
-                return {
-                    number: number + 1,
-                    color,
-                }
-            })
-        }
-
-        const generateColorActionCards = (color: CardColor): Array<ColorCard> => {
-            return [
-                CardAction.DrawTwo,
-                CardAction.DrawTwo,
-                CardAction.Reverse,
-                CardAction.Reverse,
-                CardAction.Skip,
-                CardAction.Skip,
-            ].map( action => {
-                return {
-                    color,
-                    action
-                }
-            })
-        }
-
-        const wildActionCards = [
-            ...new Array<ActionCard>(4).fill({action: CardAction.DrawFour}),
-            ...new Array<ActionCard>(4).fill({action: CardAction.Wild}),
-        ]
-
-        const colorCards: Array<ColorCard> = [
-            ...Object.keys(CardColor).map(color => 
-                [
-                    ...generateNumberedCards(CardColor[color as keyof typeof CardColor]),
-                    ...generateColorActionCards(CardColor[color as keyof typeof CardColor])
-                ]
-            ),
-        ].flat()
-        
-
-        this.cards = [
-            ...wildActionCards,
-            ...colorCards,
-        ]
-        
+    constructor(schema?: Array<ColorCard | WildCard>) {
+        this.cards = schema || defaultSchema as Array<ColorCard | WildCard>  
     }
 
 }

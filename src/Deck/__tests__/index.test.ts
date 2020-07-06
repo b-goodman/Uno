@@ -1,8 +1,8 @@
-import Deck from '..'
+import Deck, { SchemaError } from '..'
 
 describe('Deck Class', () => {
-    it('Generates a standrd deck of Uno cards', () => {
+    it('Generates a deck of 108 Uno cards', () => {
         const deck = new Deck()
-        console.log(JSON.stringify(deck, null, 2))
+        expect(deck.cards.length).toEqual(108)
     })
 })
