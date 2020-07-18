@@ -15,24 +15,52 @@ export enum CardColor {
     Blue = 'Blue',
 }
 
-export interface WildCard {
-    action: CardAction
-}
-
-export interface ColorCard {
+interface ColorCardSchema {
     color: CardColor
     number?: number
     action?: CardAction
 }
 
+interface WildCardSchema {
+    action: CardAction
+}
+
+export class WildCard {
+    public action: CardAction
+
+    constructor(opts: WildCardSchema) {
+        this.action = opts.action
+    }
+}
+
+export class ColorCard {
+    public color: CardColor
+    public number?: number
+    public action?: CardAction
+
+    constructor(opts: ColorCardSchema) {
+        this.color = opts.color
+        this.number = opts.number
+        this.action = opts.action
+    }
+}
+
 export class SchemaError extends Error {}
+
+export type Cards = Array<ColorCard | WildCard>
 
 export default class Deck {
 
-    public cards: Array<ColorCard | WildCard> = []
+    public cards: Cards = []
 
-    constructor(schema?: Array<ColorCard | WildCard>) {
-        this.cards = schema || defaultSchema as Array<ColorCard | WildCard>  
+    constructor(schema?: Array<ColorCardSchema | WildCardSchema>) {
+        this.cards = (schema || defaultSchema as Array<ColorCardSchema | WildCardSchema>).map( cardSchema => {
+            if ((cardSchema as ColorCard).color) {
+                return new ColorCard(cardSchema as ColorCardSchema)
+            } else {
+                return new WildCard(cardSchema as WildCardSchema)
+            }
+        })
     }
 
     public shuffle(): void {
